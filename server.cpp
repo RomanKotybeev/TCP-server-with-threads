@@ -157,6 +157,10 @@ void *handle_session(void *session)
 int main()
 {
 	Server *server = Server::Run(6666);
+	if (!server) {
+		perror("server");
+		return 1;
+	}
 	while (true) {
 		pthread_t thr;
 		Session *session = server->AcceptSession();	
