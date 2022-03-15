@@ -7,6 +7,7 @@ Every session can
 - increment
 - decrement
 - get
+
 `VALUE`.
 
 We lock the mutex to protect `VALUE` from the interference of other threads
