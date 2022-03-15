@@ -22,8 +22,7 @@ public:
 	SocketObj(sockaddr_in& addr, int fd)
 		: addr(addr), fd(fd)
 	{}
-	int GetFd() { return fd; }
-	virtual ~SocketObj() { close(fd); }
+	int GetFd() const { return fd; }
 };
 
 class Session : public SocketObj {
@@ -34,12 +33,12 @@ public:
 	char buffer[buf_len];
 	Session(sockaddr_in& addr, int fd)
 		: SocketObj(addr, fd)
+		, buf_used(0)
 		{ val_mut = PTHREAD_MUTEX_INITIALIZER; }
-	virtual ~Session() {}
 	bool EnterInteractiveMode();
 	bool ProcessMsg();
 	void CheckLine();
-	void Send(char *msg);
+	void Send(char *msg) const;
 };
 
 int Session::VALUE = 0;
@@ -60,7 +59,7 @@ bool Session::EnterInteractiveMode()
 	return ret;
 }
 
-void Session::Send(char *msg)
+void Session::Send(char *msg) const
 {
 	write(GetFd(), msg, strlen(msg));
 }
@@ -100,10 +99,14 @@ void Session::CheckLine()
 	}
 }
 
+/* ------------------------------------------------------- */
+/* ------------------------ Server ----------------------- */
+/* ------------------------------------------------------- */
+
 class Server : public SocketObj {
 	Server(sockaddr_in& addr, int fd)
 		: SocketObj(addr, fd)
-	{}
+		{}
 public:
 	static Server* Run(int port);
 	Session *AcceptSession();
@@ -139,6 +142,10 @@ Session *Server::AcceptSession()
 	Session *session = new Session(addr, sd);
 	return session;
 }
+
+/* ------------------------------------------------------- */
+/* -------------- main and thread function --------------- */
+/* ------------------------------------------------------- */
 
 void *handle_session(void *session)
 {
