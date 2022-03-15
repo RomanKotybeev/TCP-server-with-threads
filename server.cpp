@@ -23,6 +23,7 @@ public:
 		: addr(addr), fd(fd)
 	{}
 	int GetFd() const { return fd; }
+	virtual ~SocketObj() { close(fd); }
 };
 
 class Session : public SocketObj {
