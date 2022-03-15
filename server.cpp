@@ -19,7 +19,7 @@ class SocketObj {
 	sockaddr_in addr;
 	int fd;
 public:
-	SocketObj(sockaddr_in addr, int fd)
+	SocketObj(sockaddr_in& addr, int fd)
 		: addr(addr), fd(fd)
 	{}
 	int GetFd() { return fd; }
@@ -32,7 +32,7 @@ class Session : public SocketObj {
 	pthread_mutex_t val_mut;
 public:
 	char buffer[buf_len];
-	Session(sockaddr_in addr, int fd)
+	Session(sockaddr_in& addr, int fd)
 		: SocketObj(addr, fd)
 		{ val_mut = PTHREAD_MUTEX_INITIALIZER; }
 	virtual ~Session() {}
@@ -101,7 +101,7 @@ void Session::CheckLine()
 }
 
 class Server : public SocketObj {
-	Server(sockaddr_in addr, int fd)
+	Server(sockaddr_in& addr, int fd)
 		: SocketObj(addr, fd)
 	{}
 public:
